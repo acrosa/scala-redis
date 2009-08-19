@@ -9,6 +9,9 @@ import com.redis.operations._
 
 class Redis(val host: String, val port: Int) extends Operations with ListOperations with SetOperations with NodeOperations with KeySpaceOperations with SortOperations {
   
+  // auxiliary constructor
+  def this() = this("localhost", 6379)
+  
   // Points to the connection to a server instance
   val connection = Connection(host, port)
   var db: Int = 0
