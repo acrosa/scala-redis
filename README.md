@@ -26,7 +26,7 @@ http://code.google.com/p/redis/
 
 Start your redis instance (usually redis-server will do it)
 
-    $ cd redis-scala
+    $ cd scala-redis
     $ sbt
     > update
     > test (optional to run the tests)
