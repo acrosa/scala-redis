@@ -21,7 +21,7 @@ class RedisCluster(val hosts: String*) extends Operations with ListOperations wi
   val replicas = NUMBER_OF_REPLICAS
   
   // Outputs a formatted representation of the Redis server.
-  override def toString() = cluster.mkString(", ")
+  override def toString = cluster.mkString(", ")
   
   // Connect the client and add it to the cluster.
   def connectClient(host: String): Boolean = {

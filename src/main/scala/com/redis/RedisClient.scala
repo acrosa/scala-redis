@@ -29,5 +29,5 @@ class Redis(val host: String, val port: Int) extends Operations with ListOperati
   def getConnection = connection
   
   // Outputs a formatted representation of the Redis server.
-  override def toString() = connection.host+":"+connection.port+" <connected:"+connection.connected+">"
+  override def toString = connection.host+":"+connection.port+" <connected:"+connection.connected+">"
 }
