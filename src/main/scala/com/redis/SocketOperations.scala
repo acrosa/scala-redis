@@ -85,7 +85,12 @@ trait SocketOperations {
       case _  => false
     }
   }
-  def readList: Option[List[String]] = listReply(readResponse.toString)
+  def readList: Option[List[String]] = {
+    readResponse match {
+      case Some(s: String) => listReply(s)
+      case _ => None
+    }
+  }
   def readSet: Option[Set[String]] = {
     readResponse match {
       case Some(s: String) => setReply(s)
@@ -124,7 +129,7 @@ trait SocketOperations {
        case ERR     => reconnect; None; // RECONNECT
        case SINGLE  => lineReply(responseType._2)
        case BULK    => bulkReply(responseType._2)
-       case MULTI   => lineReply(responseType._2)
+       case MULTI   => Some(responseType._2)
        case INT     => integerReply(responseType._2)
        case _       => reconnect; None; // RECONNECT
       }
@@ -144,22 +149,6 @@ trait SocketOperations {
   
   def lineReply(response: String): Option[String] = Some(response)
   
-  def listReply(response: String): Option[List[String]] = {
-    val total = Integer.parseInt(response.split('*')(1))
-    if(total != -1) {
-      var list: List[String] = List()
-      (1 to total).foreach { i => 
-        bulkReply(readtype._2) match {
-          case Some(s) => list = (list ::: List(s))
-          case _ => None
-        }
-      }
-      Some(list)
-    } else {
-      None
-    }
-  }
-  
   def bulkReply(response: String): Option[String] = {
     if(response(1).toString() != ERR){
       var length: Int = Integer.parseInt(response.split('$')(1).split("\r\n")(0))
@@ -175,7 +164,23 @@ trait SocketOperations {
       None
     }
   }
-  
+
+  def listReply(response: String): Option[List[String]] = {
+    val total = Integer.parseInt(response.split('*')(1))
+    if(total != -1) {
+      var list: List[String] = List()
+      (1 to total).foreach { i => 
+        bulkReply(readtype._2) match {
+          case Some(s) => list = (list ::: List(s))
+          case _ => None
+        }
+      }
+      Some(list)
+    } else {
+      None
+    }
+  }
+
   def setReply(response: String): Option[Set[String]] = {
     val total = Integer.parseInt(response.split('*')(1))
     if(total != -1) {
