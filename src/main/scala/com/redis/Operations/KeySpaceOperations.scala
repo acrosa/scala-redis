@@ -12,16 +12,22 @@ trait KeySpaceOperations{
   
   // KEYS
   // returns all the keys matching the glob-style pattern.
-  def keys(pattern: String): Array[String] = {
+  def keys(pattern: String): Option[Array[String]] = {
     connection.write("KEYS "+pattern+"\r\n")
-    connection.readResponse.toString.split(" ")
+    connection.readResponse match {
+      case Some(s: String) => Some(s.split(" "))
+      case _ => None
+    }
   }
   
   // RANDKEY
   // return a randomly selected key from the currently selected DB.
-  def randomKey: String = {
+  def randomKey: Option[String] = {
     connection.write("RANDOMKEY\r\n")
-    connection.readResponse.toString.split('+')(1)
+    connection.readResponse match {
+      case Some(s: String) => Some(s.split('+')(1))
+      case _ => None
+    }
   }
   
   // RENAME (oldkey, newkey)
@@ -40,7 +46,7 @@ trait KeySpaceOperations{
   
   // DBSIZE
   // return the size of the db.
-  def dbSize: Int = {
+  def dbSize: Option[Int] = {
     connection.write("DBSIZE\r\n")
     connection.readInt
   }

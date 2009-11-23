@@ -30,20 +30,20 @@ object ListOperationsSpec extends Specification with Mockito {
     }
     
     "pop from head" in {
-      connection.readString returns "value"
-      client.popHead("key") mustEqual "value"
+      connection.readString returns Some("value")
+      client.popHead("key") mustEqual Some("value")
       connection.write("LPOP key\r\n") was called
     }
     
     "pop from tail" in {
-      connection.readString returns "value"
-      client.popTail("key") mustEqual "value"
+      connection.readString returns Some("value")
+      client.popTail("key") mustEqual Some("value")
       connection.write("RPOP key\r\n") was called
     }
     
     "return list index" in {
-      connection.readString returns "value"
-      client.listIndex("k", 2) mustEqual "value"
+      connection.readString returns Some("value")
+      client.listIndex("k", 2) mustEqual Some("value")
       connection.write("LINDEX k 2\r\n") was called
     }
     
@@ -54,13 +54,13 @@ object ListOperationsSpec extends Specification with Mockito {
     }
     
     "return list size" in {
-      connection.readInt returns 3
-      client.listLength("k") mustEqual 3
+      connection.readInt returns Some(3)
+      client.listLength("k") mustEqual Some(3)
       connection.write("LLEN k\r\n") was called
     }
     
     "return list range" in {
-      val listResult: List[String] = List("one", "two", "three", "four", "five")
+      val listResult = Some(List("one", "two", "three", "four", "five"))
       connection.readList returns listResult
       client.listRange("k", 2, 4) mustEqual listResult
       connection.write("LRANGE k 2 4\r\n") was called

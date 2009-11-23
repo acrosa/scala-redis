@@ -33,23 +33,23 @@ trait Operations{
   
   // GET (key)
   // gets the value for the specified key.
-  def get(key: String): String = {
+  def get(key: String): Option[String] = {
     val connection = getConnection(key)
     val a = connection.write("GET "+key+"\r\n")
     connection.readResponse match {
-      case r: String => r.toString
-      case _ => null
+      case Some(r:String) => Some(r)
+      case _ => None
     }
   }
   
   // GETSET (key, value)
   // is an atomic set this value and return the old value command.
-  def getSet(key: String, value: String): String = {
+  def getSet(key: String, value: String): Option[String] = {
     val connection = getConnection(key)
     val a = connection.write("GETSET "+key+" "+value.length+"\r\n"+value+"\r\n")
     connection.readResponse match {
-      case r: String => r.toString
-      case _ => null
+      case Some(r: String) => Some(r)
+      case _ => None
     }
   }
   
@@ -72,17 +72,17 @@ trait Operations{
   // INCR (key)
   // INCR (key, increment)
   // increments the specified key, optional the increment value.
-  def incr(x: Any): Int = x match {
+  def incr(x: Any): Option[Int] = x match {
     case (key: String, increment: Int) => incrBy(key, increment)
     case (key: String) => incrOne(key)
-    case _ => 0
+    case _ => None
   }
-  def incrBy(key: String, increment: Int): Int = {
+  def incrBy(key: String, increment: Int): Option[Int] = {
     val connection = getConnection(key)
     connection.write("INCRBY "+key+" "+increment+"\r\n")
     connection.readInt
   }
-  def incrOne(key: String): Int = {
+  def incrOne(key: String): Option[Int] = {
     val connection = getConnection(key)
     connection.write("INCR "+key+"\r\n")
     connection.readInt
@@ -94,12 +94,12 @@ trait Operations{
   def decr(key: String, decrement: Int) = decrBy(key, decrement)
   def decr(key: String) = decrOne(key)
   
-  def decrBy(key: String, decrement: Int): Int = {
+  def decrBy(key: String, decrement: Int): Option[Int] = {
     val connection = getConnection(key)
     connection.write("DECRBY "+key+" "+decrement+"\r\n")
     connection.readInt
   }
-  def decrOne(key: String): Int = {
+  def decrOne(key: String): Option[Int] = {
     val connection = getConnection(key)
     connection.write("DECR "+key+"\r\n")
     connection.readInt

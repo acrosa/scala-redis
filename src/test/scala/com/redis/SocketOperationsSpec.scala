@@ -59,16 +59,16 @@ object SocketOperationsSpec extends Specification with Mockito {
       
       "read OK" in {
         readOkFromInput
-        socketOperation.readResponse mustEqual socketOperation.OK
+        socketOperation.readResponse mustEqual Some(socketOperation.OK)
       }
       
       "read single line" in {
         readSingleFromInput
-        socketOperation.readResponse mustEqual socketOperation.SINGLE
+        socketOperation.readResponse mustEqual Some(socketOperation.SINGLE)
       }
       
       "reconnect on error" in {
-        socketOperation.readResponse mustEqual false
+        socketOperation.readResponse mustEqual None
         socket.close was called
         socketOperation.connected mustEqual true
       }
@@ -79,13 +79,13 @@ object SocketOperationsSpec extends Specification with Mockito {
         // Here's what should happen: '$6\r\n' on first readLine and then 'foobar\r\n'
         readBulkFromInput
         socketOperation.readtype mustEqual ("$", "$6\r\nfoobar\r\n")
-        socketOperation.readResponse mustEqual "$6\r\nfoobar\r\n"
+        socketOperation.readResponse mustEqual Some("$6\r\nfoobar\r\n")
         socketOperation.bulkReply("$6\r\nfoobar\r\n") was called
       }
       
       "read integer" in {
         readIntFromInput
-        socketOperation.readInt mustEqual 666
+        socketOperation.readInt mustEqual Some(666)
       }
       
       "read a boolean return value" in {

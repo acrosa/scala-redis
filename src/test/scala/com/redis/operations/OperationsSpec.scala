@@ -43,14 +43,14 @@ object OperationsSpec extends Specification with Mockito {
     }
     
     "get a key" in {
-      connection.readResponse returns "b"
-      client.get("a") mustEqual "b"
+      connection.readResponse returns Some("b")
+      client.get("a") mustEqual Some("b")
       connection.write("GET a\r\n") was called
     }
     
     "get and set a key" in {
-      connection.readResponse returns "old"
-      client.getSet("a", "new") mustEqual "old"
+      connection.readResponse returns Some("old")
+      client.getSet("a", "new") mustEqual Some("old")
       connection.write("GETSET a 3\r\nnew\r\n") was called
     }
     
@@ -73,32 +73,32 @@ object OperationsSpec extends Specification with Mockito {
     }
     
     "increment a value" in {
-      connection.readInt returns 1
-      client.incr("a") mustEqual 1
+      connection.readInt returns Some(1)
+      client.incr("a") mustEqual Some(1)
       connection.write("INCR a\r\n") was called
     }
     
     "increment a value by N" in {
-      connection.readInt returns 27
-      client.incr("a", 23) mustEqual 27
+      connection.readInt returns Some(27)
+      client.incr("a", 23) mustEqual Some(27)
       connection.write("INCRBY a 23\r\n") was called
     }
     
     "decrement a value" in {
-      connection.readInt returns 0
-      client.decr("a") mustEqual 0
+      connection.readInt returns Some(0)
+      client.decr("a") mustEqual Some(0)
       connection.write("DECR a\r\n") was called
     }
     
     "decrement a value by N" in {
-      connection.readInt returns 25
-      client.decr("a", 2) mustEqual 25
+      connection.readInt returns Some(25)
+      client.decr("a", 2) mustEqual Some(25)
       connection.write("DECRBY a 2\r\n") was called
     }
     
     "return type of key" in {
-      connection.readResponse returns "String"
-      client.getType("a") mustEqual "String"
+      connection.readResponse returns Some("String")
+      client.getType("a") mustEqual Some("String")
       connection.write("TYPE a\r\n") was called
     }
   }

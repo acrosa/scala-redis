@@ -30,21 +30,21 @@ object SetOperationsSpec extends Specification with Mockito {
     }
     
     "return the number of elements in the set" in {
-      connection.readInt returns 5
-      client.setCount("set") mustEqual 5
+      connection.readInt returns Some(5)
+      client.setCount("set") mustEqual Some(5)
       connection.write("SCARD set\r\n") was called
     }
     
     "return all the members from a set" in {
-      val setResult = Set("one", "two", "three")
+      val setResult = Some(Set("one", "two", "three"))
       connection.readSet returns setResult
       client.setMembers("set") mustEqual setResult
       connection.write("SMEMBERS set\r\n") was called
     }
     
     "pop an element from the set" in {
-      connection.readString returns "one"
-      client.setPop("set") mustEqual "one"
+      connection.readString returns Some("one")
+      client.setPop("set") mustEqual Some("one")
       connection.write("SPOP set\r\n") was called
     }
     
@@ -61,7 +61,7 @@ object SetOperationsSpec extends Specification with Mockito {
     }
     
     "return the intersection between N sets" in {
-      val setResult = Set("one", "two", "three")
+      val setResult = Some(Set("one", "two", "three"))
       connection.readSet returns setResult
       client.setIntersect("set", "otherset", "another") mustEqual setResult
       connection.write("SINTER set otherset another\r\n") was called
@@ -74,7 +74,7 @@ object SetOperationsSpec extends Specification with Mockito {
     }
     
     "return the difference between N sets" in {
-      val setResult = Set("one", "two", "three")
+      val setResult = Some(Set("one", "two", "three"))
       connection.readSet returns setResult
       client.setDiff("set", "oneset", "twoset") mustEqual setResult
       connection.write("SDIFF set oneset twoset\r\n") was called
@@ -87,7 +87,7 @@ object SetOperationsSpec extends Specification with Mockito {
     }
     
     "return the union between N sets" in {
-      val setResult = Set("one", "two", "three")
+      val setResult = Some(Set("one", "two", "three"))
       connection.readSet returns setResult
       client.setUnion("set", "oneset", "twoset") mustEqual setResult
       connection.write("SUNION set oneset twoset\r\n") was called

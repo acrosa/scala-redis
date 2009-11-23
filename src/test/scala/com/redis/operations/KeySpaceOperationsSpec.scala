@@ -18,14 +18,14 @@ object KeySpaceOperationsSpec extends Specification with Mockito {
     }
     
     "return all keys matching" in {
-      connection.readResponse returns "akey anotherkey adiffkey"
+      connection.readResponse returns Some("akey anotherkey adiffkey")
       client.keys("a*")
       connection.write("KEYS a*\r\n") was called
     }
     
     "return a random key" in {
-      connection.readResponse returns "+somerandonkey"
-      client.randomKey mustEqual "somerandonkey"
+      connection.readResponse returns Some("+somerandomkey")
+      client.randomKey mustEqual Some("somerandomkey")
       connection.write("RANDOMKEY\r\n") was called
     }
     
@@ -42,8 +42,8 @@ object KeySpaceOperationsSpec extends Specification with Mockito {
     }
     
     "tell the size of the db, # of keys" in {
-      connection.readInt returns 4
-      client.dbSize mustEqual 4
+      connection.readInt returns Some(4)
+      client.dbSize mustEqual Some(4)
       connection.write("DBSIZE\r\n") was called
     }
   }

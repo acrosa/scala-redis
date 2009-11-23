@@ -24,21 +24,22 @@ object NodeOperationsSpec extends Specification with Mockito {
     }
     
     "return the last time saved data to the db" in {
-      connection.readInt returns 1250421891
-      client.lastSave mustEqual  1250421891
+      connection.readInt returns Some(1250421891)
+      client.lastSave mustEqual  Some(1250421891)
       connection.write("LASTSAVE\r\n") was called
     }
     
     "return all specified keys" in {
-      connection.readList returns List[String]("hola", null, null)
-      client.mget("a", "b", "c") mustEqual List[String]("hola", null, null)
+      val list = Some(List[String]("hola", null, null))
+      connection.readList returns list
+      client.mget("a", "b", "c") mustEqual list
       connection.write("MGET a b c\r\n") was called
     }
     
     "return server info" in {
       val sampleInfo = "res0: Any = \nredis_version:0.091\nconnected_clients:2\nconnected_slaves:0\nused_memory:3036\nchanges_since_last_save:0\nlast_save_time:1250440893\ntotal_connections_received:2\ntotal_commands_processed:0\nuptime_in_seconds:7\nuptime_in_days:0\n"
-      connection.readResponse returns sampleInfo
-      client.info mustEqual sampleInfo
+      connection.readResponse returns Some(sampleInfo)
+      client.info mustEqual Some(sampleInfo)
       connection.write("INFO\r\n") was called
     }
     

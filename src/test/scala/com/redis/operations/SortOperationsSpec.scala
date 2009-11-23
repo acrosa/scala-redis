@@ -18,14 +18,14 @@ object SortOperationsSpec extends Specification with Mockito {
     }
     
     "sort the contents of the specified key" in {
-      val listResult: List[String] = List("one", "two", "three")
+      val listResult = Some(List("one", "two", "three"))
       connection.readList returns listResult
       client.sort("set", "ALPHA DESC") mustEqual listResult
       connection.write("SORT set ALPHA DESC\r\n") was called
     }
     
     "sort the contents of the specified key with default" in {
-      val listResult: List[String] = List("one", "two", "three")
+      val listResult = Some(List("one", "two", "three"))
       connection.readList returns listResult
       client.sort("set") mustEqual listResult
       connection.write("SORT set\r\n") was called

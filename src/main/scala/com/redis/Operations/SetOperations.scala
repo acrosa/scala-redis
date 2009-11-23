@@ -27,7 +27,7 @@ trait SetOperations{
   
   // SCARD
   // Return the number of elements (the cardinality) of the Set at key.
-  def setCount(key: String): Int = {
+  def setCount(key: String): Option[Int] = {
     val connection = getConnection(key)
     connection.write("SCARD "+key+"\r\n")
     connection.readInt
@@ -35,7 +35,7 @@ trait SetOperations{
   
   // SMEMBERS
   // Return all the members of the Set value at key.
-  def setMembers(key: String): Set[String] = {
+  def setMembers(key: String): Option[Set[String]] = {
     val connection = getConnection(key)
     connection.write("SMEMBERS "+key+"\r\n")
     connection.readSet
@@ -43,7 +43,7 @@ trait SetOperations{
   
   // SPOP
   // Remove and return (pop) a random element from the Set value at key.
-  def setPop(key: String): String = {
+  def setPop(key: String): Option[String] = {
     val connection = getConnection(key)
     connection.write("SPOP "+key+"\r\n")
     connection.readString
@@ -67,7 +67,7 @@ trait SetOperations{
   
   // SINTER
   // Return the intersection between the Sets stored at key1, key2, ..., keyN.
-  def setIntersect(keys: String*): Set[String] = {
+  def setIntersect(keys: String*): Option[Set[String]] = {
     val connection = getConnection(keys(0))
     connection.write("SINTER "+keys.mkString(" ")+"\r\n")
     connection.readSet
@@ -83,7 +83,7 @@ trait SetOperations{
   
   // SDIFF
   // Return the difference between the Set stored at key1 and all the Sets key2, ..., keyN.
-  def setDiff(keys: String*): Set[String] = {
+  def setDiff(keys: String*): Option[Set[String]] = {
     val connection = getConnection(keys(0))
     connection.write("SDIFF "+keys.mkString(" ")+"\r\n")
     connection.readSet
@@ -99,7 +99,7 @@ trait SetOperations{
   
   // SUNION
   // Return the union between the Sets stored at key1, key2, ..., keyN.
-  def setUnion(keys: String*): Set[String] = {
+  def setUnion(keys: String*): Option[Set[String]] = {
     val connection = getConnection(keys(0))
     connection.write("SUNION "+keys.mkString(" ")+"\r\n")
     connection.readSet

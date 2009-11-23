@@ -27,7 +27,7 @@ trait ListOperations{
   
   // LPOP
   // atomically return and remove the first (LPOP) or last (RPOP) element of the list
-  def popHead(key: String): String = {
+  def popHead(key: String): Option[String] = {
     val connection = getConnection(key)
     connection.write("LPOP "+key+"\r\n")
     connection.readString
@@ -35,7 +35,7 @@ trait ListOperations{
   
   // RPOP
   // atomically return and remove the first (LPOP) or last (RPOP) element of the list
-  def popTail(key: String): String = {
+  def popTail(key: String): Option[String] = {
     val connection = getConnection(key)
     connection.write("RPOP "+key+"\r\n")
     connection.readString
@@ -44,7 +44,7 @@ trait ListOperations{
   // LINDEX
   // return the especified element of the list stored at the specified key. 0 is the first element, 1 the second and so on.
   // Negative indexes are supported, for example -1 is the last element, -2 the penultimate and so on.
-  def listIndex(key: String, index: Int): String = {
+  def listIndex(key: String, index: Int): Option[String] = {
     val connection = getConnection(key)
     connection.write("LINDEX "+key+" "+index+"\r\n")
     connection.readString
@@ -61,7 +61,7 @@ trait ListOperations{
   // LLEN
   // return the length of the list stored at the specified key.
   // If the key does not exist zero is returned (the same behaviour as for empty lists). If the value stored at key is not a list an error is returned.
-  def listLength(key: String): Int = {
+  def listLength(key: String): Option[Int] = {
     val connection = getConnection(key)
     connection.write("LLEN "+key+"\r\n")
     connection.readInt
@@ -70,7 +70,7 @@ trait ListOperations{
   // LRANGE
   // return the specified elements of the list stored at the specified key.
   // Start and end are zero-based indexes. 0 is the first element of the list (the list head), 1 the next element and so on.
-  def listRange(key: String, start: Int, end: Int): List[String] = {
+  def listRange(key: String, start: Int, end: Int): Option[List[String]] = {
     val connection = getConnection(key)
     connection.write("LRANGE "+key+" "+start+" "+end+"\r\n")
     connection.readList

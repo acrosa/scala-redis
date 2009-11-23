@@ -26,7 +26,7 @@ trait NodeOperations {
   
   // LASTSAVE
   // return the UNIX TIME of the last DB SAVE executed with success.
-  def lastSave: Int = {
+  def lastSave: Option[Int] = {
     connection.write("LASTSAVE\r\n")
     connection.readInt
   }

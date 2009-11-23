@@ -12,12 +12,12 @@ trait SocketOperations {
   
   // Response codes from the Redis server
   // they tell you what's coming next from the server.
-  val ERR: String    = "-"
-  val OK: String     = "+OK"
-  val SINGLE: String = "+"
-  val BULK: String   = "$"
-  val MULTI: String  = "*"
-  val INT:String     = ":"
+  val ERR    = "-"
+  val OK     = "+OK"
+  val SINGLE = "+"
+  val BULK   = "$"
+  val MULTI  = "*"
+  val INT    = ":"
   
   val host: String
   val port: Int
@@ -32,7 +32,7 @@ trait SocketOperations {
   def getSocket: Socket = socket
 
   def connected = { getSocket != null }
-  def reconnect = { disconnect && connect; }
+  def reconnect = { disconnect && connect }
   
   // Connects the socket, and sets the input and output streams.
   def connect: Boolean = {
@@ -42,7 +42,7 @@ trait SocketOperations {
       in = new BufferedReader(new InputStreamReader(getSocket.getInputStream));
       true
     } catch {
-      case _ => clear_fd; false;
+      case _ => clearFd; false;
     }
   }
   
@@ -52,28 +52,45 @@ trait SocketOperations {
       socket.close
       out.close
       in.close
-      clear_fd
+      clearFd
       true
     } catch {
       case _ => false
     }
   }
   
-  def clear_fd = {
+  def clearFd = {
     socket = null
     out = null
     in = null
   }
   
   // Reads the server responses as Scala types.
-  def readString: String = readResponse.toString                 // Reads the server response as an Int
-  def readInt: Int = Integer.parseInt(readResponse.toString)     // Reads the server response as an Int
-  def readList: List[String] = listReply(readResponse.toString)  // Reads the server response as a List
-  def readSet: Set[String]   = setReply(readResponse.toString)   // Reads the server response as a String
-  def readBoolean: Boolean = readResponse match {
-    case 1  => true
-    case OK => true
-    case _  => false
+  def readString: Option[String] = {
+    readResponse match {
+      case Some(s: String) => Some(s)
+      case _ => None
+    }
+  }
+  def readInt: Option[Int] = {
+    readResponse match {
+      case Some(i: Int) => Some(i)
+      case _ => None
+    }
+  }
+  def readBoolean: Boolean = {
+    readResponse match {
+      case Some(1) => true
+      case Some(OK) => true
+      case _  => false
+    }
+  }
+  def readList: Option[List[String]] = listReply(readResponse.toString)
+  def readSet: Option[Set[String]] = {
+    readResponse match {
+      case Some(s: String) => setReply(s)
+      case _ => None
+    }
   }
   
   // Read from Input Stream.
@@ -87,46 +104,63 @@ trait SocketOperations {
   
   // Gets the type of response the server is going to send.
   def readtype = {
-    val res = readline
-    if(res !=null){
-      (res(0).toString(), res)
-    }else{
-      ("-", "")
+    try {
+      val res = readline
+      if(res !=null){
+        (res(0).toString(), res)
+      }else{
+        (ERR, "")
+      }
+    } catch {
+      case e: Exception => (ERR, "")
     }
   }
   
   // Reads the response from the server based on the response code.
-  def readResponse = {
-    
+  def readResponse: Option[Any] = {
     val responseType = readtype
-    try{
-       responseType._1 match {
-        case ERR     => reconnect; // RECONNECT
-        case SINGLE  => lineReply(responseType._2)
-        case BULK    => bulkReply(responseType._2)
-        case MULTI   => responseType._2
-        case INT     => integerReply(responseType._2)
-        case _       => reconnect; // RECONNECT
-       }
-    }catch{
-      case e: Exception => false
+    try {
+      responseType._1 match {
+       case ERR     => reconnect; None; // RECONNECT
+       case SINGLE  => lineReply(responseType._2)
+       case BULK    => bulkReply(responseType._2)
+       case MULTI   => lineReply(responseType._2)
+       case INT     => integerReply(responseType._2)
+       case _       => reconnect; None; // RECONNECT
+      }
+    } catch {
+      case e: Exception => None
+    }
+  }
+
+  def multiReply(response: String): Option[String] = Some(response) // TODO Check this
+  
+  def integerReply(response: String): Option[Int] = {
+    response.split(":")(1).toString match {
+      case "-1" => None
+      case s: String => Some(Integer.parseInt(s))
     }
   }
   
-  def integerReply(response: String): Int = Integer.parseInt(response.split(":")(1).toString)
+  def lineReply(response: String): Option[String] = Some(response)
   
-  def lineReply(response: String): String = response
-  
-  def listReply(response: String): List[String] = {
-      val total = Integer.parseInt(response.split('*')(1))
+  def listReply(response: String): Option[List[String]] = {
+    val total = Integer.parseInt(response.split('*')(1))
+    if(total != -1) {
       var list: List[String] = List()
-      for(i <- 1 to total){
-        list = (list ::: List(bulkReply(readtype._2)))
+      (1 to total).foreach { i => 
+        bulkReply(readtype._2) match {
+          case Some(s) => list = (list ::: List(s))
+          case _ => None
+        }
       }
-    list
+      Some(list)
+    } else {
+      None
+    }
   }
   
-  def bulkReply(response: String) = {
+  def bulkReply(response: String): Option[String] = {
     if(response(1).toString() != ERR){
       var length: Int = Integer.parseInt(response.split('$')(1).split("\r\n")(0))
       var line, res: String = ""
@@ -136,17 +170,26 @@ trait SocketOperations {
         res += line
         if(length > 0) res += "\r\n"
       }
-      res
-    }else{ null }
+      Some(res)
+    } else {
+      None
+    }
   }
   
-  def setReply(response: String): Set[String] = {
-      val total = Integer.parseInt(response.split('*')(1))
+  def setReply(response: String): Option[Set[String]] = {
+    val total = Integer.parseInt(response.split('*')(1))
+    if(total != -1) {
       var set: Set[String] = Set()
       for(i <- 1 to total){
-        set += bulkReply(readtype._2)
+        bulkReply(readtype._2) match {
+          case Some(x) => set += x
+          case _ => return None
+        }
       }
-    set
+      Some(set)
+    } else {
+      None
+    }
   }
   
   // Wraper for the socket write operation.
@@ -156,8 +199,8 @@ trait SocketOperations {
   def write(data: String) = {
     if(!connected) connect;
     write_to_socket(data){
-      getSocket => 
-        try { 
+      getSocket =>
+        try {
           getSocket.write(data.getBytes)
         } catch {
           case _ => reconnect;
