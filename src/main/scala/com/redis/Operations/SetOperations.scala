@@ -112,4 +112,13 @@ trait SetOperations{
     connection.write("SUNIONSTORE "+key+" "+keys.mkString(" ")+"\r\n")
     connection.readBoolean
   }
+  
+  // SRANDMEMBER 
+  // Return a random member of the Set value at key
+  def setRandomMember(key: String): Option[String] = {
+    val connection = getConnection(key)
+    connection.write("SRANDMEMBER "+key+"\r\n")
+    connection.readString
+  }
+  
 }

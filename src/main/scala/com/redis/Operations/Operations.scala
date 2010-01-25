@@ -121,4 +121,11 @@ trait Operations{
     connection.readResponse
   }
   
+  // TTL (key)
+  // returns the time to live for the key.
+  def ttl(key: String): Option[Int] = {
+    val connection = getConnection(key)
+    connection.write("TTL "+key+"\r\n")
+    connection.readInt
+  }
 }

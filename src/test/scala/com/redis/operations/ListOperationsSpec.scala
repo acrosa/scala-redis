@@ -77,5 +77,11 @@ object ListOperationsSpec extends Specification with Mockito {
       client.listRem("k", 2, "value") mustEqual true
       connection.write("LREM k 2 5\r\nvalue\r\n") was called
     }
+    
+    "Return and remove (atomically) the last element of the source List stored at _srckey_ and push the same element to the destination List stored at _dstkey_" in {
+      connection.readString returns Some("valuefroma")
+      client.rPopLPush("a", "b") mustEqual Some("valuefroma")
+      connection.write("RPOPLPUSH a b\r\n") was called
+    }
   }
 }

@@ -118,4 +118,12 @@ trait NodeOperations {
     connection.write("AUTH "+secret+"\r\n")
     connection.readBoolean
   }
+  
+  // BGREWRITEAOF
+  // Rewrite the append only file in background when it gets too big
+  def bgRewriteAOF(): Option[String] = {
+    connection.write("BGREWRITEAOF\r\n")
+    connection.readString
+  }
+  
 }

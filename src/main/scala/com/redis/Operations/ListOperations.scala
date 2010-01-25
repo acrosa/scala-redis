@@ -91,4 +91,13 @@ trait ListOperations{
     connection.write("LREM "+key+" "+count+" "+value.length+"\r\n"+value+"\r\n")
     connection.readBoolean
   }
+  
+  // RPOPLPUSH
+  // Atomically return and remove the last (tail) element of the srckey list, and push the element as the first (head) element of the dstkey list.
+  def rPopLPush(key: String, destKey: String) = {
+    val connection = getConnection(key)
+    connection.write("RPOPLPUSH "+key+" "+destKey+"\r\n")
+    connection.readString
+  }
+  
 }

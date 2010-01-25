@@ -98,5 +98,11 @@ object SetOperationsSpec extends Specification with Mockito {
       client.setUnionStore("set", "oneset", "twoset") mustEqual true
       connection.write("SUNIONSTORE set oneset twoset\r\n") was called
     }
+    
+    "return a random member of the Set value at key" in {
+      connection.readString returns Some("value")
+      client.setRandomMember("a") mustEqual Some("value")
+      connection.write("SRANDMEMBER a\r\n") was called
+    }
   }
 }

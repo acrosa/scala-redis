@@ -110,5 +110,11 @@ object NodeOperationsSpec extends Specification with Mockito {
       client.auth("secret") mustEqual true
       connection.write("AUTH secret\r\n") was called
     }
+    
+    "rewrite the append only file in background when it gets too big" in {
+      connection.readString returns Some("+Background append only file rewriting started")
+      client.bgRewriteAOF mustEqual Some("+Background append only file rewriting started")
+      connection.write("BGREWRITEAOF\r\n") was called
+    }
   }
 }

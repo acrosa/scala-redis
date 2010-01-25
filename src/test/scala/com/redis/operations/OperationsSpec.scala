@@ -101,5 +101,11 @@ object OperationsSpec extends Specification with Mockito {
       client.getType("a") mustEqual Some("String")
       connection.write("TYPE a\r\n") was called
     }
+    
+    "return the ttl of a key" in {
+      connection.readInt returns Some(19)
+      client.ttl("a") mustEqual Some(19)
+      connection.write("TTL a\r\n") was called
+    }
   }
 }
