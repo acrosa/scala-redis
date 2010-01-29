@@ -7,7 +7,13 @@ import org.mockito.Mock._
 import org.mockito.Mockito._
 import org.mockito.Mockito.doNothing
 
-class RedisTestClient(val connection: Connection) extends Operations with ListOperations with SetOperations with NodeOperations with KeySpaceOperations with SortOperations {
+class RedisTestClient(val connection: Connection) extends Operations
+                                                  with ListOperations
+                                                  with SetOperations
+                                                  with NodeOperations
+                                                  with KeySpaceOperations
+                                                  with SortOperations
+                                                  with SortedSetOperations {
   var db: Int = 0
   def getConnection(key: String): Connection = connection
 }
