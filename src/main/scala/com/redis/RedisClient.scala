@@ -7,7 +7,13 @@ import com.redis.operations._
  *
  */
 
-class Redis(val host: String, val port: Int) extends Operations with ListOperations with SetOperations with NodeOperations with KeySpaceOperations with SortOperations {
+class Redis(val host: String, val port: Int) extends Operations
+                                             with ListOperations
+                                             with SetOperations
+                                             with NodeOperations
+                                             with KeySpaceOperations
+                                             with SortOperations
+                                             with SortedSetOperations {
   
   // auxiliary constructor
   def this() = this("localhost", 6379)
