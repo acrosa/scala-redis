@@ -9,7 +9,12 @@ import com.redis.operations._
 
 import scala.collection.mutable.ArrayBuffer
 
-class RedisCluster(val hosts: String*) extends Operations with ListOperations with SetOperations with HashRing with SortOperations {
+class RedisCluster(val hosts: String*) extends Operations
+                                       with ListOperations
+                                       with SetOperations
+                                       with HashRing
+                                       with SortOperations
+                                       with SortedSetOperations {
   
   // Get Redis Client connection inside the HashRing.
   def getConnection(key: String) = {
