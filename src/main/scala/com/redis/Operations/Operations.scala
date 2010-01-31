@@ -128,4 +128,20 @@ trait Operations{
     connection.write("TTL "+key+"\r\n")
     connection.readInt
   }
+  
+  // MSET
+  // Set the the respective keys to the respective values.
+  def mSet(keyValues: Map[String, String]): Boolean = { 
+    val connection = getConnection(keyValues.toArray(0)._1)
+    connection.writeMultiBulk(keyValues.size * 2, "MSET", keyValues)
+    connection.readBoolean
+  }
+  
+  // MSETNX
+  // Set the the respective keys to the respective values.
+  def mSetnx(keyValues: Map[String, String]): Boolean = { 
+    val connection = getConnection(keyValues.toArray(0)._1)
+    connection.writeMultiBulk(keyValues.size * 2, "MSETNX", keyValues)
+    connection.readBoolean
+  }
 }

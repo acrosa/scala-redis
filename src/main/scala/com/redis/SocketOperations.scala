@@ -212,4 +212,12 @@ trait SocketOperations {
         }
     }
   }
+  
+  def writeMultiBulk(size: Int, command: String, arguments: Map[String, String]) = {
+    write("*"+ (size+1) +"\r\n"+ bulkFormat(command) + mapToMultiBulkFormat(arguments))
+  }
+  
+  def bulkFormat(value: String): String = "$"+ value.length+"\r\n"+ value +"\r\n"
+  
+  def mapToMultiBulkFormat(m: Map[String, String]): String = m.map(x => bulkFormat(x._1) + bulkFormat(x._2)).mkString
 }

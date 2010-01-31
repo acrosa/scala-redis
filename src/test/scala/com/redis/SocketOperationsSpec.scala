@@ -8,7 +8,9 @@ import org.specs.mock.Mockito
 import org.mockito.Mock._
 import org.mockito.Mockito._
 
-class SocketOperationTest(val host:String, val port: Int) extends SocketOperations
+class SocketOperationTest(val host:String, val port: Int) extends SocketOperations {
+  override def write(data: String) = data
+}
 
 object SocketOperationsSpec extends Specification with Mockito {
   
@@ -91,6 +93,17 @@ object SocketOperationsSpec extends Specification with Mockito {
       "read a boolean return value" in {
         readOkFromInput
         socketOperation.readBoolean mustEqual true
+      }
+    }
+    
+    "when writing commands to the socket" in {
+      
+      "format a value into a multi bulk string" in {
+        socketOperation.bulkFormat("SET") mustEqual "$3\r\nSET\r\n"
+      }
+      
+      "format a map into a multi bulk string" in {
+        socketOperation.mapToMultiBulkFormat(Map("a" -> "b", "key" -> "value")) mustEqual "$1\r\na\r\n$1\r\nb\r\n$3\r\nkey\r\n$5\r\nvalue\r\n"
       }
     }
   }
