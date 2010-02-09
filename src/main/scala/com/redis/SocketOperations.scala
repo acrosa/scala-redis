@@ -138,8 +138,6 @@ trait SocketOperations {
     }
   }
 
-  def multiReply(response: String): Option[String] = Some(response) // TODO Check this
-  
   def integerReply(response: String): Option[Int] = {
     response.split(":")(1).toString match {
       case "-1" => None
