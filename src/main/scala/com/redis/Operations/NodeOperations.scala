@@ -1,5 +1,7 @@
 package com.redis.operations
 
+import com.redis.Connection
+
 /**
  * Redis node operations
  *

@@ -1,5 +1,7 @@
 package com.redis.operations
 
+import com.redis.Connection
+
 /**
  * Redis operations
  *
@@ -132,7 +134,7 @@ trait Operations{
   // MSET
   // Set the the respective keys to the respective values.
   def mSet(keyValues: Map[String, String]): Boolean = { 
-    val connection = getConnection(keyValues.toArray(0)._1)
+    val connection = getConnection(keyValues.toArray.apply(0)._1)
     connection.writeMultiBulk(keyValues.size * 2, "MSET", keyValues)
     connection.readBoolean
   }
@@ -140,7 +142,7 @@ trait Operations{
   // MSETNX
   // Set the the respective keys to the respective values.
   def mSetnx(keyValues: Map[String, String]): Boolean = { 
-    val connection = getConnection(keyValues.toArray(0)._1)
+    val connection = getConnection(keyValues.toArray.apply(0)._1)
     connection.writeMultiBulk(keyValues.size * 2, "MSETNX", keyValues)
     connection.readBoolean
   }
