@@ -26,7 +26,7 @@ trait HashRing {
       ring += (key -> node)
       sortedKeys = sortedKeys ::: List(key)
     }
-    sortedKeys = sortedKeys.sort(_ < _)
+    sortedKeys = sortedKeys.sortWith(_ < _)
   }
   
   // get the node in the hash ring for this key
