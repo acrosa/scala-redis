@@ -38,8 +38,8 @@ let's connect and get a key:
 
     scala> import com.redis._
     scala> val r = new Redis("localhost", 6379)
-    scala> val r.set("key", "some value")
-    scala> val r.get("key")
+    scala> r.set("key", "some value")
+    scala> r.get("key")
 
 
 Alejandro Crosa <<alejandrocrosa@gmail.com>>
