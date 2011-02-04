@@ -85,7 +85,7 @@ trait SocketOperations {
       case _  => false
     }
   }
-  def readList: Option[List[String]] = {
+  def readList: Option[List[Option[String]]] = {
     readResponse match {
       case Some(s: String) => listReply(s)
       case _ => None
@@ -163,15 +163,12 @@ trait SocketOperations {
     }
   }
 
-  def listReply(response: String): Option[List[String]] = {
+  def listReply(response: String): Option[List[Option[String]]] = {
     val total = Integer.parseInt(response.split('*')(1))
     if(total != -1) {
-      var list: List[String] = List()
-      (1 to total).foreach { i => 
-        bulkReply(readtype._2) match {
-          case Some(s) => list = (list ::: List(s))
-          case _ => None
-        }
+      var list: List[Option[String]] = List()
+      (1 to total).foreach { i =>
+        list = list ::: List(bulkReply(readtype._2))
       }
       Some(list)
     } else {
