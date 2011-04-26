@@ -72,7 +72,7 @@ trait ListOperations{
   // LRANGE
   // return the specified elements of the list stored at the specified key.
   // Start and end are zero-based indexes. 0 is the first element of the list (the list head), 1 the next element and so on.
-  def listRange(key: String, start: Int, end: Int): Option[List[String]] = {
+  def listRange(key: String, start: Int, end: Int): Option[List[Option[String]]] = {
     val connection = getConnection(key)
     connection.write("LRANGE "+key+" "+start+" "+end+"\r\n")
     connection.readList

@@ -43,7 +43,7 @@ trait NodeOperations {
   // MGET (key, key, key, ...)
   // get the values of all the specified keys.
   def mget(keys: String*) = {
-    connection.write("MGET "+keys.mkString(" ")+"\r\n")
+    connection.writeMultiBulk(keys.size, "MGET", keys)
     connection.readList
   }
   

@@ -30,7 +30,7 @@ object NodeOperationsSpec extends Specification with Mockito {
     }
     
     "return all specified keys" in {
-      val list = Some(List[String]("hola", null, null))
+      val list = Some(List[Option[String]](Some("hola"), None, None))
       connection.readList returns list
       client.mget("a", "b", "c") mustEqual list
       connection.write("MGET a b c\r\n") was called

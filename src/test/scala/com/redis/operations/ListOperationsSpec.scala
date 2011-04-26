@@ -60,7 +60,7 @@ object ListOperationsSpec extends Specification with Mockito {
     }
     
     "return list range" in {
-      val listResult = Some(List("one", "two", "three", "four", "five"))
+      val listResult = Some(List("one", "two", "three", "four", "five").map(Some(_)))
       connection.readList returns listResult
       client.listRange("k", 2, 4) mustEqual listResult
       connection.write("LRANGE k 2 4\r\n") was called
