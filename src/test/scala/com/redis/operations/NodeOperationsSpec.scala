@@ -44,8 +44,10 @@ object NodeOperationsSpec extends Specification with Mockito {
     }
     
     "start monitor debug on the server" in {
+      val reader = mock[java.io.BufferedReader]
       connection.readBoolean returns true
-      client.monitor._1 mustEqual true
+      connection.getInputStream returns reader
+      client.monitor mustEqual reader
       connection.write("MONITOR\r\n") was called
     }
     
